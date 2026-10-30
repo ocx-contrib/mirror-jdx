@@ -76,7 +76,7 @@ source:
 # demands — verified against the readelf evidence above, not inherited on
 # faith from the sibling spec: both Linux keys BARE with ubuntu + alpine +
 # fedora legs (the alpine leg being the only thing that turns the "requires
-# nothing" claim into evidence), darwin/* on `macos-14`, windows/arm64 on
+# nothing" claim into evidence), darwin/* on `macos-15`, windows/arm64 on
 # `windows-11-arm`. So the END STATE of this spec is to carry NO `platforms:`
 # block at all and inherit that one.
 #
