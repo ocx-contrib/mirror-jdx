@@ -105,6 +105,48 @@ versions:
   new_per_run: 5
   poll_interval: "58 0-23/6 * * *"
 
+# Restated IN FULL from ../mirror-base.yml (shallow merge — see its header) only
+# to add the darwin 1.48.0 hole. Keep in sync with the base; drop this block
+# once 1.48.0 is out of the window or the base gains per-spec excludes.
+platforms:
+  linux/amd64:
+    runner: ubuntu-latest
+    containers:
+      - { image: "ubuntu:24.04", shell: bash }
+      - { image: "alpine:3.20",  shell: sh }
+      - { image: "fedora:40",    shell: bash }
+  linux/arm64:
+    # arm64 container legs run natively — no qemu — so the runner arch must
+    # match the platform or the renderer reds the leg up front.
+    runner: ubuntu-24.04-arm
+    containers:
+      - { image: "ubuntu:24.04", shell: bash }
+      - { image: "alpine:3.20",  shell: sh }
+      - { image: "fedora:40",    shell: bash }
+  darwin/amd64:
+    # Intel slice tested on the arm64 macos-15 runner via Rosetta 2 — GitHub's
+    # native macos-13 Intel pool is exhausted and deadlocks the push job.
+    runner: macos-15
+    prefix: ["arch", "-x86_64"]
+    exclude:
+      - version: "1.48.0"
+        reason: "upstream binary links NSGlassEffectView, dyld-aborts on macOS < 26 (jdx/fnox#1156)"
+  darwin/arm64:
+    runner: macos-15
+    shell: bash
+    exclude:
+      - version: "1.48.0"
+        reason: "upstream binary links NSGlassEffectView, dyld-aborts on macOS < 26 (jdx/fnox#1156)"
+  windows/amd64:
+    runner: windows-latest
+    shell: pwsh
+  windows/arm64:
+    # Native arm64 Windows runner — the amd64 pool cannot execute an ARM64 PE.
+    runner: windows-11-arm
+    shell: pwsh
+  # No `containers:` on darwin or windows — those runners have no Linux
+  # container engine, and the key is rejected at spec load.
+
 tests:
   # `script:` resolves from the REPOSITORY ROOT — unlike `metadata.default` and
   # `catalog.logo` above, which resolve against this spec's own directory.
